@@ -53,11 +53,11 @@ class TimeStatistic:
         commentTimeCount = [0] * 337
         articleMeta = self.loadArticleMeta('data/Gossiping/2018_01_18/Gossiping_M_1516263600_A_FC3.json')
         postTimeStamp = articleMeta['timeStamp']
-        print(postTimeStamp)
         for idx in range(0, len(articleMeta['pushMetaData'])):
             diffTime = articleMeta['pushMetaData'][idx]['timeStamp'] - postTimeStamp
-            print((int)(diffTime/1800))
-        return
+            timeSlot = (int)(diffTime/1800)
+            commentTimeCount[timeSlot] += 1
+        return commentTimeCount
 
 # Main function
 if __name__ == '__main__':
@@ -73,4 +73,4 @@ if __name__ == '__main__':
     ## Example for getArticleTimeDistribution ##
     #print (timeStatistic.getArticleTimeDistribution())
 
-    timeStatistic.getCommentTimeDistrbution()
+    #print(timeStatistic.getCommentTimeDistrbution())
