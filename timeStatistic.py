@@ -51,12 +51,21 @@ class TimeStatistic:
     def getCommentTimeDistrbution(self):
         # one slot is a half hour, record to 7 days, last one is more than 7 days
         commentTimeCount = [0] * 337
-        articleMeta = self.loadArticleMeta('data/Gossiping/2018_01_18/Gossiping_M_1516263600_A_FC3.json')
-        postTimeStamp = articleMeta['timeStamp']
-        for idx in range(0, len(articleMeta['pushMetaData'])):
-            diffTime = articleMeta['pushMetaData'][idx]['timeStamp'] - postTimeStamp
-            timeSlot = (int)(diffTime/1800)
-            commentTimeCount[timeSlot] += 1
+        # Error count - Record negative value
+        errorNegativeTimeStamp = 0
+        for listIdx in range(0, len(self.articleIndex)):
+            articleMeta = self.loadArticleMeta(self.articleIndex[listIdx]['filePath'])
+            postTimeStamp = articleMeta['timeStamp']
+            for idx in range(0, len(articleMeta['pushMetaData'])):
+                diffTime = articleMeta['pushMetaData'][idx]['timeStamp'] - postTimeStamp
+                timeSlot = (int)(diffTime/1800)
+                if timeSlot > 336:
+                    timeSlot = 336
+                elif timeSlot < 0:
+                    timeSlot = 336
+                    errorNegativeTimeStamp += 1
+                commentTimeCount[timeSlot] += 1
+        print('getCommentTimeDistrbution done, error time stamp is ', errorNegativeTimeStamp)
         return commentTimeCount
 
 # Main function
@@ -71,6 +80,8 @@ if __name__ == '__main__':
     #print(authorCount_20180118_sorted)
 
     ## Example for getArticleTimeDistribution ##
-    #print (timeStatistic.getArticleTimeDistribution())
+    #articleTimeDistribution = timeStatistic.getArticleTimeDistribution()
+    #fp = open('ArticleTimeDistribution.json', 'w')
+    #fp.write(json.dumps(articleTimeDistribution, ensure_ascii=False))
 
-    #print(timeStatistic.getCommentTimeDistrbution())
+    print(timeStatistic.getCommentTimeDistrbution())
