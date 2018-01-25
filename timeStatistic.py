@@ -56,7 +56,7 @@ class TimeStatistic:
             timeSlot = (int) (dayTimeStamp / 3600)
             articleTimeCount[timeSlot] += 1
 
-        return json.dumps({'firstTimeStamp':firstTimeStamp, 'lastTimeStamp':lastTimeStamp, 'maxCount':max(articleTimeCount), 'minCount':min(articleTimeCount), 'articleTimeCount':articleTimeCount})
+        return json.dumps({'firstTimeStamp':firstTimeStamp, 'lastTimeStamp':lastTimeStamp, 'maxCount':max(articleTimeCount), 'minCount':min(articleTimeCount), 'sumCount':sum(articleTimeCount), 'articleTimeCount':articleTimeCount})
 
     # Get time distrubution for each comment
     # Return: comment count for each time slot (a half hour), json format
@@ -100,4 +100,8 @@ if __name__ == '__main__':
     #fp = open('ArticleTimeDistribution.json', 'w')
     #fp.write(json.dumps(articleTimeDistribution, ensure_ascii=False))
 
-    #print(timeStatistic.getCommentTimeDistrbution())
+    commentTimeDistribution = timeStatistic.getCommentTimeDistrbution()
+    print(commentTimeDistribution)
+    fp = open('CommentTimeDistribution.json', 'w')
+    fp.write(json.dumps(articleTimeDistribution, ensure_ascii=False))
+
