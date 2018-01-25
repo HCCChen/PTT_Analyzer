@@ -7,6 +7,7 @@ import time
 import datetime
 import sys
 import json
+import math
 import string
 import argparse
 import jieba
@@ -53,7 +54,7 @@ class ArticleAnalyzer:
 
         for idx in range(0, len(keywordList)):
             if keywordList[idx] in keywordIDFDict:
-                keywordIDFDict[keywordList[idx]] = totalCountOfArticle / keywordIDFDict[keywordList[idx]]
+                keywordIDFDict[keywordList[idx]] = math.log(totalCountOfArticle / keywordIDFDict[keywordList[idx]])
 
         return keywordIDFDict
 
