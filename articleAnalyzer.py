@@ -21,10 +21,17 @@ class ArticleAnalyzer:
         with open(indexFilePath, "r") as fp:
             self.articleIndex = json.load(fp)
 
-        self.stopWordList = {}
+        self.stopWordDict = {}
         with open("stop_words.txt", "r") as fp:
             for line in fp.readlines():
-                self.stopWordList[line.strip('\n')] = 1
+                self.stopWordDict[line.strip('\n')] = 1
+
+        self.wordIDFDict = {}
+        try:
+            with open("wordIDF.json", "r") as fp:
+                self.wordIDFDict = json.load(fp)
+        except Exception as e:
+            print('Cannot load IDF library.')
 
         jieba.set_dictionary('dict.txt.big')
 
@@ -34,10 +41,21 @@ class ArticleAnalyzer:
             articleMeta = json.load(fp)
         return articleMeta
 
-    def getIDFValue(self, keywordList, topN=20):
+    def __getIDFValue(self, keywordListParameter, topN=20):
         keywordIDFDict = {}
         totalCountOfArticle = len(self.articleIndex)
+        keywordList = list(keywordListParameter)
 
+        # Check IDF dict first
+        for idx in range(len(keywordList)-1, -1, -1):
+            if keywordList[idx] in self.wordIDFDict:
+                keywordIDFDict[keywordList[idx]] = self.wordIDFDict[keywordList[idx]]
+                keywordList.pop(idx)
+
+        if len(keywordList) == 0:
+            return keywordIDFDict
+
+        # If have keywork not in IDF dict, search all file
         for listIdx in range(0, totalCountOfArticle):
             try:
                 articleMeta = self.loadArticleMeta(self.articleIndex[listIdx]['filePath'])
@@ -55,6 +73,11 @@ class ArticleAnalyzer:
         for idx in range(0, len(keywordList)):
             if keywordList[idx] in keywordIDFDict:
                 keywordIDFDict[keywordList[idx]] = math.log(totalCountOfArticle / keywordIDFDict[keywordList[idx]])
+                self.wordIDFDict[keywordList[idx]] = keywordIDFDict[keywordList[idx]]
+
+        # Update Word IDF record
+        fp = open('wordIDF.json', 'w')
+        fp.write(json.dumps(self.wordIDFDict, ensure_ascii=False, indent=4))
 
         return keywordIDFDict
 
@@ -66,7 +89,7 @@ class ArticleAnalyzer:
         wordListDwarf = list(jieba.cut(article, cut_all=False))
         wordList = []   
         for idx in range(0, len(wordListDwarf)):
-            if not wordListDwarf[idx] in self.stopWordList:
+            if not wordListDwarf[idx] in self.stopWordDict:
                 wordList.append(wordListDwarf[idx])
 
         keywordFreqDict = {}
@@ -80,7 +103,7 @@ class ArticleAnalyzer:
                 keywordList.append(wordList[idx])
 
         # Get IDF info
-        keywordIDFDict = self.getIDFValue(keywordList)
+        keywordIDFDict = self.__getIDFValue(keywordList)
 
         # Calculate TF-IDF value
         for idx in range(0, len(keywordList)):
@@ -108,3 +131,4 @@ if __name__ == '__main__':
     articleAnalyzer = ArticleAnalyzer('data/Gossiping')
     #print(articleAnalyzer.getKeywordSetByTextRank("data/Gossiping/2018_01_23/Gossiping_M_1516679909_A_5F9.json"))
     #print(articleAnalyzer.getKeywordSetByTFIDF("data/Gossiping/2018_01_23/Gossiping_M_1516679909_A_5F9.json"))
+    #print(articleAnalyzer.getKeywordSetByTFIDF("data/Gossiping/2018_01_21/Gossiping_M_1516510689_A_B93.json"))
