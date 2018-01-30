@@ -95,13 +95,13 @@ if __name__ == '__main__':
     #print(authorCount_20180118)
 
     ## Example for getArticleTimeDistribution ##
-    #articleTimeDistribution = timeStatistic.getArticleTimeDistribution()
-    #print(articleTimeDistribution)
-    #fp = open('ArticleTimeDistribution.json', 'w')
-    #fp.write(json.dumps(articleTimeDistribution, ensure_ascii=False))
-
-    commentTimeDistribution = timeStatistic.getCommentTimeDistrbution()
-    print(commentTimeDistribution)
-    fp = open('CommentTimeDistribution.json', 'w')
+    articleTimeDistribution = timeStatistic.getArticleTimeDistribution()
+    print(articleTimeDistribution)
+    fp = open('ArticleTimeDistribution.json', 'w')
     fp.write(json.dumps(articleTimeDistribution, ensure_ascii=False))
+
+    #commentTimeDistribution = timeStatistic.getCommentTimeDistrbution()
+    #print(commentTimeDistribution)
+    #fp = open('CommentTimeDistribution.json', 'w')
+    #fp.write(json.dumps(articleTimeDistribution, ensure_ascii=False))
 
