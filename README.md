@@ -16,3 +16,7 @@ Data set is many JSON file which collect by PTT_Aritcal_Crawler.
 #### articleAnalyzer.py: 
 * getKeywordSetByTFIDF - Get keyword by TF-IDF method, default select the top 20 word
 * getKeywordSetByTextRank - Get keyword by TextRank method, default select the top 20 word
+
+### Demo
+Result will update to below website, it will show by d3.js
+https://paulchen.csie.io/
