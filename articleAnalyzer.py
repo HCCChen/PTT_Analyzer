@@ -124,6 +124,7 @@ class ArticleAnalyzer:
     def getKeywordSetByTextRank(self, filePath):
         articleMeta = self.loadArticleMeta(filePath)
         article = articleMeta['title'] + '\n' + articleMeta['context']
+        print(article)
         # TextRank
         wordFromTextRank = jieba.analyse.textrank(article, withWeight=True, topK=40)
         return wordFromTextRank
@@ -140,24 +141,26 @@ class ArticleAnalyzer:
 
         # Get TF-IDF for each word to be weight
         keywordWeightDict = {}
-        keywordFromTfIDF = self.getKeywordSetByTFIDF(filePath, -1)
-        # Word is more important if it appear at title.
-        for idx in range(0, len(keywordFromTfIDF)):
-            if articleTitle.find(keywordFromTfIDF[idx][0]) != -1:
-                keywordWeightDict[keywordFromTfIDF[idx][0]] = keywordFromTfIDF[idx][1] + 1.5
-            else:
-                keywordWeightDict[keywordFromTfIDF[idx][0]] = keywordFromTfIDF[idx][1] + 1
 
-        # Get keyword candidate by TextRank
+        # Get keyword weight by TextRank
         keywordFromTextRank = self.getKeywordSetByTextRank(filePath)
 
         # Get top 5 keyword to be article tag by weighted TextRank
         tagCandidate = {}
         for idx in range(0, len(keywordFromTextRank)):
-            if keywordFromTextRank[idx][0] in keywordWeightDict:
-                tagCandidate[keywordFromTextRank[idx][0]] = keywordFromTextRank[idx][1] * keywordWeightDict[keywordFromTextRank[idx][0]]
+            if articleTitle.find(keywordFromTextRank[idx][0]) != -1:
+                keywordWeightDict[keywordFromTextRank[idx][0]] = keywordFromTextRank[idx][1] + 1.5
             else:
-                tagCandidate[keywordFromTextRank[idx][0]] = keywordFromTextRank[idx][1]
+                keywordWeightDict[keywordFromTextRank[idx][0]] = keywordFromTextRank[idx][1] + 1
+
+
+        keywordFromTfIDF = self.getKeywordSetByTFIDF(filePath, -1)
+        # Word is more important if it appear at title.
+        for idx in range(0, len(keywordFromTfIDF)):
+            if keywordFromTfIDF[idx][0] in keywordWeightDict:
+                tagCandidate[keywordFromTfIDF[idx][0]] = keywordFromTfIDF[idx][1] * keywordWeightDict[keywordFromTfIDF[idx][0]]
+            else:
+                tagCandidate[keywordFromTfIDF[idx][0]] = keywordFromTfIDF[idx][1]
 
         sortedTag = sorted(tagCandidate.items(), key=lambda d: d[1], reverse=True)
 
@@ -166,4 +169,4 @@ class ArticleAnalyzer:
 # Main function
 if __name__ == '__main__':
     articleAnalyzer = ArticleAnalyzer('data/Gossiping')
-    print(articleAnalyzer.getTagFromArticle('Gossiping_M_1514097065_A_4D0'))
+    print(articleAnalyzer.getTagFromArticle('Gossiping_M_1514098616_A_3DE'))
